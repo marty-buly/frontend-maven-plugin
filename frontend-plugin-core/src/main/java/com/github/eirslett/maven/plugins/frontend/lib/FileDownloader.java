@@ -80,7 +80,8 @@ final class DefaultFileDownloader implements FileDownloader {
             return executeViaProxy(requestUrl);
         } else {
             logger.info("No proxy was configured, downloading directly");
-            response = HttpClients.createDefault().execute(new HttpGet(requestUrl));
+//             response = HttpClients.createDefault().execute(new HttpGet(requestUrl));
+            response = HttpClients.custom().disableContentCompression().build().execute(new HttpGet(requestUrl));
         }
         return response;
     }
@@ -93,9 +94,10 @@ final class DefaultFileDownloader implements FileDownloader {
                     new AuthScope(proxy.host, proxy.port),
                     new UsernamePasswordCredentials(proxy.username, proxy.password)
             );
-            proxyClient = HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+            proxyClient = HttpClients.custom().disableContentCompression().setDefaultCredentialsProvider(credentialsProvider).build();
         } else {
-            proxyClient = HttpClients.createDefault();
+//             proxyClient = HttpClients.createDefault();
+        	proxyClient = HttpClients.custom().disableContentCompression().build();
         }
 
         final HttpHost proxyHttpHost = new HttpHost(proxy.host, proxy.port, proxy.protocol);
